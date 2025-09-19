@@ -34,8 +34,8 @@
 
 ## Slide 28
 - Role.query.all()
->>> User.query.all()
->>> User.query.filter_by(role=user_role).all()
+- User.query.all()
+- User.query.filter_by(role=user_role).all()
 
 ## Slide 30
->>> user_role = Role.query.filter_by(name='User').first()
+- user_role = Role.query.filter_by(name='User').first()
