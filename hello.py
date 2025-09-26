@@ -68,7 +68,15 @@ def index():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.name.data).first()
         if user is None:
-            user = User(username=form.name.data)
+            # ---> ALTERAÇÃO 1: Atribuir uma função padrão ao novo usuário
+            user_role = Role.query.filter_by(name='User').first()
+            # Se a função 'User' não existir no banco, ela é criada
+            if not user_role:
+                user_role = Role(name='User')
+                db.session.add(user_role)
+                db.session.commit()
+            # O novo usuário é criado já com a associação à função 'User'
+            user = User(username=form.name.data, role=user_role)
             db.session.add(user)
             db.session.commit()
             session['known'] = False
@@ -76,5 +84,15 @@ def index():
             session['known'] = True
         session['name'] = form.name.data
         return redirect(url_for('index'))
-    return render_template('index.html', form=form, name=session.get('name'),
-                           known=session.get('known', False))
+
+    # ---> ALTERAÇÃO 2: Buscar todos os usuários para enviar ao template
+    users = User.query.all()
+
+    return render_template(
+        'index.html',
+        form=form,
+        name=session.get('name'),
+        known=session.get('known', False),
+        users=users  # ---> ALTERAÇÃO 3: Passar a lista de usuários para o HTML
+    )
+
